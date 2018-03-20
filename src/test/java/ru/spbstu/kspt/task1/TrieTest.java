@@ -11,10 +11,8 @@ class TrieTest {
         Trie tree = new Trie();
         tree.add("a");
         tree.add("b");
-        Trie.Node examplee = new Trie.Node(false);
-        examplee.addNode('a', true);
-        examplee.addNode('b', true);
-        assertEquals(examplee.toString(), tree.toString());
+        assertTrue(tree.isPresent("a"));
+        assertTrue(tree.isPresent("b"));
     }
 
     @Test
@@ -23,11 +21,7 @@ class TrieTest {
         tree.add("a");
         tree.add("b");
         tree.remove("a");
-        Trie.Node examplee = new Trie.Node(false);
-        examplee.addNode('a', true);
-        examplee.addNode('b', true);
-        examplee.removeNode('a');
-        assertEquals(examplee.toString(), tree.toString());
+        assertTrue(tree.isPresent("b"));
     }
 
     @Test
@@ -80,11 +74,12 @@ class TrieTest {
         tree.add("goodnight");
         tree.add("goodmorning");
         tree.add("helmet");
-        Trie subTrie = new Trie();
+        String result = "goodmorning, goodnight";
+        assertEquals(result, tree.findSubstringByPrefix("good"));
+/*        Trie subTrie = new Trie();
         subTrie.add("night");
         subTrie.add("morning");
-        assertEquals(subTrie.toString(), tree.findSubstringByPrefix("good"));
-
+        assertEquals(subTrie.toString(), tree.findSubstringByPrefix("good"));*/
     }
 
 }

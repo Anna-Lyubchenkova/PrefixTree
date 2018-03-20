@@ -1,6 +1,7 @@
 package ru.spbstu.kspt.task1;
 
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Trie {
@@ -38,20 +39,47 @@ public class Trie {
     public String findSubstringByPrefix(String s) {
         char[] prefix = s.toCharArray();
         Node lastNode = root;
-        // ArrayList v = new ArrayList();
-        for (char c : prefix) {
-            if (lastNode.get(c) == null)
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < s.length(); i++) {
+            if (lastNode.get(s.charAt(i)) == null)
                 break;
-            //v.add(c);
-            lastNode = lastNode.get(c);
-
+            buffer.append(s.charAt(i));
+            lastNode = lastNode.get(s.charAt(i));
         }
 
-        //System.out.println(v);
+        if (!s.equals(buffer.toString()))
+            return "NOT_FOUND";
 
-        Trie subTrie = new Trie(lastNode);
-        //System.out.println(subTrie);
-        return subTrie.toString();
+        //System.out.println(buffer.toString());
+
+        List<String> substring = new ArrayList<>();
+
+        String[] strings = getLevel(lastNode).split(", ");
+        StringJoiner joiner = new StringJoiner(", ");
+        for (int i = 0; i < strings.length; i++) {
+            strings[i] = s + strings[i];
+            joiner.add(strings[i]);
+        }
+
+        //System.out.println(joiner);
+
+        return joiner.toString();
+    }
+
+    private String getLevel(Node node) {
+        String result = "";
+        if (node.isEnd())
+            return ", ";
+
+        List<Character> chars = new ArrayList<>();
+        chars.addAll(node.children.keySet());
+
+        for (int i = 0; i < node.children.keySet().size(); i++) {
+            result += node.children.keySet().toArray()[i];
+            result += getLevel(node.children.get(chars.get(i)));
+        }
+
+        return result;
     }
 
     public boolean remove(String s) {
@@ -85,29 +113,29 @@ public class Trie {
         return true;
     }
 
-    @Override
-    public String toString() {
-        List<String> treeLevels = new ArrayList<>();
-
-        Collection<Node> nexts = Collections.singletonList(root);
-        while (true) {
-            Collection<Node> newNexts = new ArrayList<>();
-            StringJoiner joiner = new StringJoiner(" | ");
-            for (Node node : nexts) {
-                joiner.add(node.toString());
-                newNexts.addAll(node.getAllPresent());
-            }
-            treeLevels.add(joiner.toString());
-
-            if (newNexts.size() != 0)
-                nexts = newNexts;
-            else
-                break;
-        }
-
-        treeLevels.remove(treeLevels.size() - 1);
-        return String.join("\n", treeLevels);
-    }
+//    @Override
+//    public String toString() {
+//        List<String> treeLevels = new ArrayList<>();
+//
+//        Collection<Node> nexts = Collections.singletonList(root);
+//        while (true) {
+//            Collection<Node> newNexts = new ArrayList<>();
+//            StringJoiner joiner = new StringJoiner(" | ");
+//            for (Node node : nexts) {
+//                joiner.add(node.toString());
+//                newNexts.addAll(node.getAllPresent());
+//            }
+//            treeLevels.add(joiner.toString());
+//
+//            if (newNexts.size() != 0)
+//                nexts = newNexts;
+//            else
+//                break;
+//        }
+//
+//        treeLevels.remove(treeLevels.size() - 1);
+//        return String.join("\n", treeLevels);
+//    }
 
     static class Node {
         private Map<Character, Node> children = new HashMap<>();
@@ -147,12 +175,12 @@ public class Trie {
             return children.size();
         }
 
-        @Override
-        public String toString() {
-            StringJoiner joiner = new StringJoiner(" | ");
-            children.keySet().forEach((c) -> joiner.add(c.toString()));
-            return joiner.toString();
-        }
+//        @Override
+//        public String toString() {
+//            StringJoiner joiner = new StringJoiner(" | ");
+//            children.keySet().forEach((c) -> joiner.add(c.toString()));
+//            return joiner.toString();
+//        }
 
         public boolean isEnd() {
             return end;
