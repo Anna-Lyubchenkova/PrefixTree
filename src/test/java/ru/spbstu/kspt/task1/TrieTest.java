@@ -11,9 +11,9 @@ class TrieTest {
         Trie tree = new Trie();
         tree.add("a");
         tree.add("b");
-        Trie.Node examplee = new Trie.Node();
-        examplee.addNode('a');
-        examplee.addNode('b');
+        Trie.Node examplee = new Trie.Node(false);
+        examplee.addNode('a', true);
+        examplee.addNode('b', true);
         assertEquals(examplee.toString(), tree.toString());
     }
 
@@ -23,9 +23,9 @@ class TrieTest {
         tree.add("a");
         tree.add("b");
         tree.remove("a");
-        Trie.Node examplee = new Trie.Node();
-        examplee.addNode('a');
-        examplee.addNode('b');
+        Trie.Node examplee = new Trie.Node(false);
+        examplee.addNode('a', true);
+        examplee.addNode('b', true);
         examplee.removeNode('a');
         assertEquals(examplee.toString(), tree.toString());
     }
@@ -34,7 +34,7 @@ class TrieTest {
     void add() {
         Trie tree = new Trie();
         tree.add("helloy");
-        tree.add("hell");
+        tree.add("ell");
         tree.add("goodnight");
         tree.add("goodmorning");
         tree.add("helmet");
@@ -52,8 +52,9 @@ class TrieTest {
         tree.add("goodnight");
         tree.add("goodmorning");
         tree.add("helmet");
-        assertEquals(true, tree.isPresent("goodmo"));
+        assertEquals(false, tree.isPresent("goodmo"));
         assertEquals(false, tree.isPresent("helmost"));
+        assertEquals(true, tree.isPresent("helloy"));
     }
 
     @Test

@@ -7,7 +7,7 @@ public class Trie {
     private Node root;
 
     public Trie() {
-        this.root = new Node();
+        this.root = new Node(false);
     }
 
     private Trie(Node newRoot) {
@@ -16,33 +16,41 @@ public class Trie {
 
     public void add(String s) {
         Node lastNode = root;
-
-        for (char c : s.toCharArray())
-            lastNode = lastNode.addNode(c);
+        boolean end = true;
+        for (int i = 0; i < s.length(); i++)
+            lastNode = lastNode.addNode(s.charAt(i), i == s.length() - 1);
+        //lastNode = lastNode.addNode(null);
     }
 
     public boolean isPresent(String s) {
         Node lastNode = root;
 
-        for (char c : s.toCharArray())
-            if (lastNode != null)
-                lastNode = lastNode.get(c);
-            else
-                return false;
+        for (int i = 0; i < s.length(); i++) {
+            if (lastNode != null) {
+                lastNode = lastNode.get(s.charAt(i));
+            } else
+                return i == s.length();
+        }
 
-        return true;
+        return lastNode.isEnd();
     }
 
     public String findSubstringByPrefix(String s) {
         char[] prefix = s.toCharArray();
         Node lastNode = root;
+        // ArrayList v = new ArrayList();
         for (char c : prefix) {
             if (lastNode.get(c) == null)
                 break;
+            //v.add(c);
             lastNode = lastNode.get(c);
+
         }
 
+        //System.out.println(v);
+
         Trie subTrie = new Trie(lastNode);
+        //System.out.println(subTrie);
         return subTrie.toString();
     }
 
@@ -58,7 +66,7 @@ public class Trie {
                 finder = finder.get(c);
             } else return false;
 
-        StringBuilder builder = new StringBuilder(s);
+        /*StringBuilder builder = new StringBuilder(s);
         builder = builder.reverse();
         char[] reversed = builder.toString().toCharArray();
 
@@ -66,7 +74,14 @@ public class Trie {
             Node deleter = stack.removeFirst();
             if (!deleter.removeNode(c))
                 return true;
+        }*/
+
+        for (int i = s.length() - 1; i >= 0; i--) {
+            Node deleter = stack.removeFirst();
+            if (!deleter.removeNode(s.charAt(i)))
+                return true;
         }
+
         return true;
     }
 
@@ -96,6 +111,11 @@ public class Trie {
 
     static class Node {
         private Map<Character, Node> children = new HashMap<>();
+        boolean end = false;
+
+        public Node(boolean isEnd) {
+            end = isEnd;
+        }
 
         Node get(char c) {
             return children.get(c);
@@ -105,11 +125,11 @@ public class Trie {
             return children.values();
         }
 
-        Node addNode(char c) {
+        Node addNode(char c, boolean isLast) {
             if (children.containsKey(c))
                 return children.get(c);
             else {
-                Node node = new Node();
+                Node node = new Node(isLast);
                 children.put(c, node);
                 return node;
             }
@@ -132,6 +152,14 @@ public class Trie {
             StringJoiner joiner = new StringJoiner(" | ");
             children.keySet().forEach((c) -> joiner.add(c.toString()));
             return joiner.toString();
+        }
+
+        public boolean isEnd() {
+            return end;
+        }
+
+        public void setEnd(boolean end) {
+            this.end = end;
         }
     }
 }
