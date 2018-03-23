@@ -20,7 +20,6 @@ public class Trie {
         boolean end = true;
         for (int i = 0; i < s.length(); i++)
             lastNode = lastNode.addNode(s.charAt(i), i == s.length() - 1);
-        //lastNode = lastNode.addNode(null);
     }
 
     public boolean isPresent(String s) {
@@ -50,8 +49,6 @@ public class Trie {
         if (!s.equals(buffer.toString()))
             return "NOT_FOUND";
 
-        //System.out.println(buffer.toString());
-
         List<String> substring = new ArrayList<>();
 
         String[] strings = getLevel(lastNode).split(", ");
@@ -60,8 +57,6 @@ public class Trie {
             strings[i] = s + strings[i];
             joiner.add(strings[i]);
         }
-
-        //System.out.println(joiner);
 
         return joiner.toString();
     }
@@ -94,15 +89,6 @@ public class Trie {
                 finder = finder.get(c);
             } else return false;
 
-        /*StringBuilder builder = new StringBuilder(s);
-        builder = builder.reverse();
-        char[] reversed = builder.toString().toCharArray();
-
-        for (char c : reversed) {
-            Node deleter = stack.removeFirst();
-            if (!deleter.removeNode(c))
-                return true;
-        }*/
 
         for (int i = s.length() - 1; i >= 0; i--) {
             Node deleter = stack.removeFirst();
@@ -112,30 +98,6 @@ public class Trie {
 
         return true;
     }
-
-//    @Override
-//    public String toString() {
-//        List<String> treeLevels = new ArrayList<>();
-//
-//        Collection<Node> nexts = Collections.singletonList(root);
-//        while (true) {
-//            Collection<Node> newNexts = new ArrayList<>();
-//            StringJoiner joiner = new StringJoiner(" | ");
-//            for (Node node : nexts) {
-//                joiner.add(node.toString());
-//                newNexts.addAll(node.getAllPresent());
-//            }
-//            treeLevels.add(joiner.toString());
-//
-//            if (newNexts.size() != 0)
-//                nexts = newNexts;
-//            else
-//                break;
-//        }
-//
-//        treeLevels.remove(treeLevels.size() - 1);
-//        return String.join("\n", treeLevels);
-//    }
 
     static class Node {
         private Map<Character, Node> children = new HashMap<>();
@@ -174,13 +136,6 @@ public class Trie {
         private int size() {
             return children.size();
         }
-
-//        @Override
-//        public String toString() {
-//            StringJoiner joiner = new StringJoiner(" | ");
-//            children.keySet().forEach((c) -> joiner.add(c.toString()));
-//            return joiner.toString();
-//        }
 
         public boolean isEnd() {
             return end;

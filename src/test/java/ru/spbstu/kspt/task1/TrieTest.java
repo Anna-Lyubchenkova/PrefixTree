@@ -76,10 +76,6 @@ class TrieTest {
         tree.add("helmet");
         String result = "goodmorning, goodnight";
         assertEquals(result, tree.findSubstringByPrefix("good"));
-/*        Trie subTrie = new Trie();
-        subTrie.add("night");
-        subTrie.add("morning");
-        assertEquals(subTrie.toString(), tree.findSubstringByPrefix("good"));*/
     }
 
 }
