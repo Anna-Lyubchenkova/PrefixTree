@@ -2,6 +2,8 @@ package ru.spbstu.kspt.task1;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.StringJoiner;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TrieTest {
@@ -9,6 +11,7 @@ class TrieTest {
     @Test
     void addNode() {
         Trie tree = new Trie();
+        tree.add("alala");
         tree.add("a");
         tree.add("b");
         assertTrue(tree.isPresent("a"));
@@ -21,6 +24,7 @@ class TrieTest {
         tree.add("a");
         tree.add("b");
         tree.remove("a");
+        assertFalse(tree.isPresent("a"));
         assertTrue(tree.isPresent("b"));
     }
 
@@ -29,6 +33,7 @@ class TrieTest {
         Trie tree = new Trie();
         tree.add("helloy");
         tree.add("ell");
+        tree.add("hell");
         tree.add("goodnight");
         tree.add("goodmorning");
         tree.add("helmet");
@@ -48,7 +53,8 @@ class TrieTest {
         tree.add("helmet");
         assertEquals(false, tree.isPresent("goodmo"));
         assertEquals(false, tree.isPresent("helmost"));
-        assertEquals(true, tree.isPresent("helloy"));
+        assertEquals(true, tree.isPresent("hell"));
+        assertEquals(false, tree.isPresent("helloye"));
     }
 
     @Test
@@ -56,11 +62,8 @@ class TrieTest {
         Trie tree = new Trie();
         tree.add("helloy");
         tree.add("hell");
-        tree.add("goodnight");
-        tree.add("goodmorning");
-        tree.add("helmet");
-        tree.remove("helmet");
-        assertTrue(tree.isPresent("helloy"));
+        tree.remove("hell");
+        assertFalse(tree.isPresent("hell"));
         assertFalse(tree.isPresent("helmet"));
         assertFalse(tree.isPresent("gum"));
         assertTrue(tree.isPresent("helloy"));
@@ -75,7 +78,14 @@ class TrieTest {
         tree.add("goodmorning");
         tree.add("helmet");
         String result = "goodmorning, goodnight";
-        assertEquals(result, tree.findSubstringByPrefix("good"));
+        String prefix = "good";
+        String[] strings = tree.findSubstringByPrefix(prefix);
+        StringJoiner joiner = new StringJoiner(", ");
+        for (int i = 0; i < strings.length; i++) {
+            strings[i] = prefix + strings[i];
+            joiner.add(strings[i]);
+        }
+        assertEquals(result, joiner.toString());
     }
 
 }

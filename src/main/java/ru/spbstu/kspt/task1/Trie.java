@@ -1,7 +1,6 @@
 package ru.spbstu.kspt.task1;
 
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Trie {
@@ -11,15 +10,18 @@ public class Trie {
         this.root = new Node(false);
     }
 
+
     private Trie(Node newRoot) {
         this.root = newRoot;
     }
 
-    public void add(String s) {
+    public boolean add(String s) {
         Node lastNode = root;
-        boolean end = true;
-        for (int i = 0; i < s.length(); i++)
+        for (int i = 0; i < s.length(); i++) {
             lastNode = lastNode.addNode(s.charAt(i), i == s.length() - 1);
+        }
+
+        return lastNode.isEnd() && lastNode.children.size() == 0;
     }
 
     public boolean isPresent(String s) {
@@ -29,95 +31,80 @@ public class Trie {
             if (lastNode != null) {
                 lastNode = lastNode.get(s.charAt(i));
             } else
-                return i == s.length();
+                return false;
         }
 
-        return lastNode.isEnd();
+        return lastNode != null && lastNode.isEnd();
     }
 
-    public String findSubstringByPrefix(String s) {
+    public String[] findSubstringByPrefix(String s) {
         char[] prefix = s.toCharArray();
         Node lastNode = root;
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             if (lastNode.get(s.charAt(i)) == null)
                 break;
-            buffer.append(s.charAt(i));
+            builder.append(s.charAt(i));
             lastNode = lastNode.get(s.charAt(i));
         }
 
-        if (!s.equals(buffer.toString()))
-            return "NOT_FOUND";
+        if (!s.equals(builder.toString()))
+            return null;
 
         List<String> substring = new ArrayList<>();
-
         String[] strings = getLevel(lastNode).split(", ");
-        StringJoiner joiner = new StringJoiner(", ");
-        for (int i = 0; i < strings.length; i++) {
-            strings[i] = s + strings[i];
-            joiner.add(strings[i]);
-        }
-
-        return joiner.toString();
+        return strings;
     }
 
     private String getLevel(Node node) {
         String result = "";
         if (node.isEnd())
             return ", ";
-
         List<Character> chars = new ArrayList<>();
         chars.addAll(node.children.keySet());
-
         for (int i = 0; i < node.children.keySet().size(); i++) {
             result += node.children.keySet().toArray()[i];
             result += getLevel(node.children.get(chars.get(i)));
         }
-
         return result;
     }
 
     public boolean remove(String s) {
         Deque<Node> stack = new LinkedList<>();
-
         char[] straight = s.toCharArray();
-
         Node finder = root;
         for (char c : straight)
             if (finder.get(c) != null) {
-                stack.addFirst(finder);
+                stack.push(finder);
                 finder = finder.get(c);
             } else return false;
-
-
         for (int i = s.length() - 1; i >= 0; i--) {
-            Node deleter = stack.removeFirst();
+            Node deleter = stack.pop();
             if (!deleter.removeNode(s.charAt(i)))
-                return true;
+                return false;
         }
-
         return true;
     }
 
     static class Node {
         private Map<Character, Node> children = new HashMap<>();
         boolean end = false;
-
         public Node(boolean isEnd) {
             end = isEnd;
         }
-
         Node get(char c) {
             return children.get(c);
         }
-
         private Collection<Node> getAllPresent() {
             return children.values();
         }
-
         Node addNode(char c, boolean isLast) {
-            if (children.containsKey(c))
+            if (children.containsKey(c)) {
+                if (isLast) {
+                    children.get(c).setEnd(isLast);
+                }
                 return children.get(c);
+            }
             else {
                 Node node = new Node(isLast);
                 children.put(c, node);
@@ -129,8 +116,10 @@ public class Trie {
             if (children.get(c).size() == 0) {
                 children.remove(c);
                 return true;
-            } else
+            } else {
+                children.get(c).setEnd(false);
                 return false;
+            }
         }
 
         private int size() {
