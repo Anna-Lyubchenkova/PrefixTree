@@ -80,6 +80,9 @@ public class Trie {
             } else return false;
         for (int i = s.length() - 1; i >= 0; i--) {
             Node deleter = stack.pop();
+            if (deleter.isEnd()) {
+                break;
+            }
             if (!deleter.removeNode(s.charAt(i)))
                 return false;
         }
@@ -89,23 +92,26 @@ public class Trie {
     static class Node {
         private Map<Character, Node> children = new HashMap<>();
         boolean end = false;
+
         public Node(boolean isEnd) {
             end = isEnd;
         }
+
         Node get(char c) {
             return children.get(c);
         }
+
         private Collection<Node> getAllPresent() {
             return children.values();
         }
+
         Node addNode(char c, boolean isLast) {
             if (children.containsKey(c)) {
                 if (isLast) {
                     children.get(c).setEnd(isLast);
                 }
                 return children.get(c);
-            }
-            else {
+            } else {
                 Node node = new Node(isLast);
                 children.put(c, node);
                 return node;

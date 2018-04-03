@@ -62,11 +62,15 @@ class TrieTest {
         Trie tree = new Trie();
         tree.add("helloy");
         tree.add("hell");
-        tree.remove("hell");
-        assertFalse(tree.isPresent("hell"));
+        tree.remove("helloy");
+        assertTrue(tree.isPresent("hell"));
         assertFalse(tree.isPresent("helmet"));
         assertFalse(tree.isPresent("gum"));
+        assertFalse(tree.isPresent("helloy"));
+        tree.add("helloy");
+        tree.remove("hell");
         assertTrue(tree.isPresent("helloy"));
+        assertFalse(tree.isPresent("hell"));
     }
 
     @Test
