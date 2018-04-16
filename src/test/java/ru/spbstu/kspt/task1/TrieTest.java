@@ -2,7 +2,7 @@ package ru.spbstu.kspt.task1;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.StringJoiner;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,16 +31,16 @@ class TrieTest {
     @Test
     void add() {
         Trie tree = new Trie();
-        tree.add("helloy");
-        tree.add("ell");
+        tree.add("hello");
         tree.add("hell");
+        tree.add("hello");
+        tree.add("helloy");
         tree.add("goodnight");
         tree.add("goodmorning");
         tree.add("helmet");
         assertTrue(tree.isPresent("helloy"));
         assertFalse(tree.isPresent("helloll"));
         assertFalse(tree.isPresent("gum"));
-        assertTrue(tree.isPresent("helloy"));
     }
 
     @Test
@@ -67,29 +67,26 @@ class TrieTest {
         assertFalse(tree.isPresent("helmet"));
         assertFalse(tree.isPresent("gum"));
         assertFalse(tree.isPresent("helloy"));
-        tree.add("helloy");
-        tree.remove("hell");
-        assertTrue(tree.isPresent("helloy"));
-        assertFalse(tree.isPresent("hell"));
+        tree.add("hello");
+        tree.remove("hello");
+        assertFalse(tree.isPresent("hello"));
+        assertTrue(tree.isPresent("hell"));
     }
 
     @Test
-    void findSubstringByPrefix() {
+    void findStringByPrefix() {
         Trie tree = new Trie();
         tree.add("helloy");
         tree.add("hell");
         tree.add("goodnight");
         tree.add("goodmorning");
         tree.add("helmet");
-        String result = "goodmorning, goodnight";
+        Set<String> result = new HashSet<>();
+        result.add("goodmorning");
+        result.add("goodnight");
         String prefix = "good";
-        String[] strings = tree.findSubstringByPrefix(prefix);
-        StringJoiner joiner = new StringJoiner(", ");
-        for (int i = 0; i < strings.length; i++) {
-            strings[i] = prefix + strings[i];
-            joiner.add(strings[i]);
-        }
-        assertEquals(result, joiner.toString());
+        Set<String> strings = tree.findStringByPrefix(prefix);
+        assertEquals(result, strings);
     }
 
 }

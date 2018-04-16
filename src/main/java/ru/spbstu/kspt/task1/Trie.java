@@ -10,18 +10,12 @@ public class Trie {
         this.root = new Node(false);
     }
 
-
-    private Trie(Node newRoot) {
-        this.root = newRoot;
-    }
-
     public boolean add(String s) {
         Node lastNode = root;
         for (int i = 0; i < s.length(); i++) {
             lastNode = lastNode.addNode(s.charAt(i), i == s.length() - 1);
         }
-
-        return lastNode.isEnd() && lastNode.children.size() == 0;
+        return lastNode.children.size() == 0;
     }
 
     public boolean isPresent(String s) {
@@ -37,36 +31,27 @@ public class Trie {
         return lastNode != null && lastNode.isEnd();
     }
 
-    public String[] findSubstringByPrefix(String s) {
-        char[] prefix = s.toCharArray();
+    public Set<String> findStringByPrefix(String s) {
         Node lastNode = root;
-        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             if (lastNode.get(s.charAt(i)) == null)
-                break;
-            builder.append(s.charAt(i));
+                return null;
             lastNode = lastNode.get(s.charAt(i));
         }
-
-        if (!s.equals(builder.toString()))
-            return null;
-
-        List<String> substring = new ArrayList<>();
-        String[] strings = getLevel(lastNode).split(", ");
-        return strings;
+        Set<String> res = new HashSet<>();
+        getLevel(lastNode, res, new StringBuilder(s));
+        return res;
     }
 
-    private String getLevel(Node node) {
-        String result = "";
-        if (node.isEnd())
-            return ", ";
-        List<Character> chars = new ArrayList<>();
-        chars.addAll(node.children.keySet());
-        for (int i = 0; i < node.children.keySet().size(); i++) {
-            result += node.children.keySet().toArray()[i];
-            result += getLevel(node.children.get(chars.get(i)));
+    private void getLevel(Node node, Set<String> res, StringBuilder prefix) {
+        if (node.isEnd()) {
+            res.add(prefix.toString());
         }
-        return result;
+        for (Map.Entry<Character, Node> entry : node.children.entrySet()) {
+            prefix.append(entry.getKey());
+            getLevel(entry.getValue(), res, prefix);
+            prefix.deleteCharAt(prefix.length() - 1);
+        }
     }
 
     public boolean remove(String s) {
@@ -80,18 +65,18 @@ public class Trie {
             } else return false;
         for (int i = s.length() - 1; i >= 0; i--) {
             Node deleter = stack.pop();
+            if (!deleter.removeNode(s.charAt(i)))
+                return true;
             if (deleter.isEnd()) {
                 break;
             }
-            if (!deleter.removeNode(s.charAt(i)))
-                return false;
         }
         return true;
     }
 
     static class Node {
         private Map<Character, Node> children = new HashMap<>();
-        boolean end = false;
+        boolean end;
 
         public Node(boolean isEnd) {
             end = isEnd;
@@ -99,10 +84,6 @@ public class Trie {
 
         Node get(char c) {
             return children.get(c);
-        }
-
-        private Collection<Node> getAllPresent() {
-            return children.values();
         }
 
         Node addNode(char c, boolean isLast) {
